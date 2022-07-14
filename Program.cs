@@ -11,6 +11,13 @@ app.MapGet("v1/Todos", (AppDbContext context) => {
     return Results.Ok(toDos);
 });
 
+app.MapGet("v1/Todos/{id}", (AppDbContext context, Guid id) =>
+{
+    var todo = context.ToDos.Find(id);
+
+    return Results.Created($"/v1/Todos/{id}", todo);
+});
+
 app.MapPost("v1/Todos", (AppDbContext context ,CreateTodoModel model) => 
 {
     var todo = model.MapTo();
@@ -21,6 +28,34 @@ app.MapPost("v1/Todos", (AppDbContext context ,CreateTodoModel model) =>
     context.SaveChanges();
 
     return Results.Created($"/v1/Todos/{todo.Id}", todo);
+});
+
+app.MapPut("v1/Todos/{id}", (AppDbContext context, Guid id, Todo input) =>
+{
+    var todo = context.ToDos.Find(id);
+    if (todo == null)
+        return Results.NotFound();
+
+    todo.Done = input.Done;
+
+    context.ToDos.Update(todo);
+    context.SaveChanges();
+
+    return Results.Created($"/v1/Todos/{todo.Id}", todo);
+});
+
+app.MapDelete("v1/Todos/{id}", (AppDbContext context, Guid id) => 
+{
+    var todo = context.ToDos.Find(id);
+    
+    if(todo != null)
+    {
+        context.Remove(id);
+        context.SaveChanges();
+        return Results.Ok();
+    }
+
+    return Results.BadRequest();
 });
 
 app.Run();
