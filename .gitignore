@@ -12,6 +12,8 @@
 *.sln.docstates
 Migrations/
 app.db
+app.db-shm
+app.db-wal
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
